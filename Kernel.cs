@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using System.Text;
 using Sys = Cosmos.System;
 using Cosmos.Core.IOGroup;
+using Cosmos.HAL;
+using Cosmos.System.Network.IPv4.UDP.DHCP;
+using Cosmos.System.Network;
+using Cosmos.System.Network.Config;
+using Cosmos.System.Network.IPv4;
 
 namespace LineOS
 {
@@ -111,6 +116,25 @@ namespace LineOS
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Initializing network...");
+
+            var device = NetworkDevice.GetDeviceByName("eth0");
+            if (device == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("No network device found!");
+                Console.WriteLine("Network initialized with errors.");
+                return;
+            }
+            else 
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Network initialized.");
+            }
+
+            NetworkDevice nic = device;
+            IPConfig.Enable(nic, new Address(192, 168, 0, 69), new Address(255, 255, 255, 0), new Address(192, 168, 0, 1));
 
             Console.ForegroundColor = ConsoleColor.White;
 
@@ -127,10 +151,9 @@ namespace LineOS
 
         }
 
-
         protected override void Run()
         {
-            shell.dir(disk);
+            shell.Dir(disk);
             shell.Main();
         }
     }
